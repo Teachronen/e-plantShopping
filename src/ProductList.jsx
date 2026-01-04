@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux'; // Import useDispatch
-import { addItem } from './CartSlice'; // Import addItem action
+import { useSelector, useDispatch } from 'react-redux'; // Import useSelector
+import { addItem } from './CartSlice';
 import './ProductList.css';
 import CartItem from './CartItem';
 
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); 
-    const [addedToCart, setAddedToCart] = useState({}); // State to track added items
+    const [addedToCart, setAddedToCart] = useState({});
 
-    const dispatch = useDispatch(); // Initialize dispatch
+    // Use useSelector to access the cart items from Redux
+    const cart = useSelector(state => state.cart.items);
+    const dispatch = useDispatch();
+
+    // Calculate the total quantity of items in the cart
+    const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
 
     const plantsArray = [
         {
@@ -260,12 +265,11 @@ function ProductList({ onHomeClick }) {
         setShowCart(false);
     };
 
-    // Add to Cart Logic
     const handleAddToCart = (product) => {
         dispatch(addItem(product));
         setAddedToCart((prevState) => ({
            ...prevState,
-           [product.name]: true, // use product name as unique identifier
+           [product.name]: true, 
         }));
     };
 
@@ -289,6 +293,8 @@ function ProductList({ onHomeClick }) {
                     <div> 
                         <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}>
                             <h1 className='cart'>
+                                {/* Display the total quantity badge */}
+                                {totalQuantity} 
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id="IconChangeColor" height="68" width="68">
                                     <rect width="156" height="156" fill="none"></rect>
                                     <circle cx="80" cy="216" r="12"></circle>
